@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Principal } from "@icp-sdk/core/principal";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Database, Loader2, Shield, UserCog } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ import { useActor } from "../hooks/useActor";
 
 export default function AdminPage() {
   const { actor, isFetching } = useActor();
+  const queryClient = useQueryClient();
   const [principalId, setPrincipalId] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.user);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -50,6 +51,8 @@ export default function AdminPage() {
       await actor.assignCallerUserRole(principal, selectedRole);
       toast.success(`Role "${selectedRole}" assigned successfully!`);
       setPrincipalId("");
+      // Invalidate the callerUserRole cache so Profile page refreshes
+      await queryClient.invalidateQueries({ queryKey: ["callerUserRole"] });
     } catch (_err) {
       toast.error(
         "Failed to assign role. Check the Principal ID and try again.",

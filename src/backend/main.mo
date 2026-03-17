@@ -68,6 +68,13 @@ actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
+  // Pre-seed admin principals
+  let _seedAdmin1 = accessControlState.userRoles.add(
+    Principal.fromText("aopul-z43np-txzlu-loqz2-a2xsx-vvyei-gmhi5-wrv2u-xy4fn-vdsmu-pae"),
+    #admin
+  );
+  accessControlState.adminAssigned := true;
+
   let vendors = Map.empty<Nat, Vendor>();
   let products = Map.empty<Nat, Product>();
   let orders = Map.empty<Nat, Order>();
@@ -317,7 +324,6 @@ actor {
       status = #open;
       isEcoDelivery = false;
     };
-    // VENDOR NO1 - Nayakanahatti Kirana Store
     let vendor5 : Vendor = {
       id = 5;
       name = "Nayakanahatti Kirana Store";
@@ -327,7 +333,6 @@ actor {
       status = #open;
       isEcoDelivery = true;
     };
-    // VENDOR NO2 - Sri Guru Thipperudra Swamy Prasada Store
     let vendor6 : Vendor = {
       id = 6;
       name = "Sri Guru Thipperudra Swamy Prasada Store";
@@ -346,209 +351,29 @@ actor {
     vendors.add(6, vendor6);
     nextVendorId := 7;
 
-    // --- Products (existing) ---
-    let product1 : Product = {
-      id = 1;
-      name = "Pooja Thali";
-      vendorId = 1;
-      price = 100;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Complete pooja essentials";
-    };
-    let product2 : Product = {
-      id = 2;
-      name = "Incense Sticks";
-      vendorId = 1;
-      price = 50;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Fragrant incense sticks";
-    };
-    let product3 : Product = {
-      id = 3;
-      name = "Camphor";
-      vendorId = 1;
-      price = 30;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Pure camphor for aarti";
-    };
-    let product4 : Product = {
-      id = 4;
-      name = "Masala Dosa";
-      vendorId = 2;
-      price = 60;
-      category = #food;
-      stockStatus = #inStock;
-      description = "Crispy dosa with potato filling";
-    };
-    let product5 : Product = {
-      id = 5;
-      name = "Idli Vada";
-      vendorId = 2;
-      price = 50;
-      category = #food;
-      stockStatus = #inStock;
-      description = "Soft idlis with crispy vada";
-    };
-    let product6 : Product = {
-      id = 6;
-      name = "Filter Coffee";
-      vendorId = 2;
-      price = 25;
-      category = #food;
-      stockStatus = #inStock;
-      description = "Traditional south Indian coffee";
-    };
-    let product7 : Product = {
-      id = 7;
-      name = "Rice";
-      vendorId = 3;
-      price = 500;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Premium quality rice 5kg";
-    };
-    let product8 : Product = {
-      id = 8;
-      name = "Dal";
-      vendorId = 3;
-      price = 150;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Toor dal 1kg";
-    };
-    let product9 : Product = {
-      id = 9;
-      name = "Vegetables";
-      vendorId = 3;
-      price = 100;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Fresh mixed vegetables";
-    };
-    let product10 : Product = {
-      id = 10;
-      name = "Paracetamol";
-      vendorId = 4;
-      price = 20;
-      category = #medicine;
-      stockStatus = #inStock;
-      description = "Pain relief tablets";
-    };
-    let product11 : Product = {
-      id = 11;
-      name = "Cough Syrup";
-      vendorId = 4;
-      price = 80;
-      category = #medicine;
-      stockStatus = #inStock;
-      description = "Cough relief syrup";
-    };
-    let product12 : Product = {
-      id = 12;
-      name = "First Aid Kit";
-      vendorId = 4;
-      price = 250;
-      category = #medicine;
-      stockStatus = #inStock;
-      description = "Complete first aid kit";
-    };
-
-    // --- VENDOR NO1 Products: Nayakanahatti Kirana Store ---
-    let product13 : Product = {
-      id = 13;
-      name = "Milk (500ml)";
-      vendorId = 5;
-      price = 30;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Fresh full-cream milk, 500ml packet";
-    };
-    let product14 : Product = {
-      id = 14;
-      name = "Sunflower Oil (1L)";
-      vendorId = 5;
-      price = 160;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Refined sunflower cooking oil, 1 litre";
-    };
-    let product15 : Product = {
-      id = 15;
-      name = "Sugar (1kg)";
-      vendorId = 5;
-      price = 50;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "White sugar, 1kg pack";
-    };
-    let product16 : Product = {
-      id = 16;
-      name = "Wheat Atta (5kg)";
-      vendorId = 5;
-      price = 280;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Whole wheat flour, 5kg bag";
-    };
-    let product17 : Product = {
-      id = 17;
-      name = "Biscuits (Parle-G)";
-      vendorId = 5;
-      price = 10;
-      category = #grocery;
-      stockStatus = #inStock;
-      description = "Classic Parle-G glucose biscuits";
-    };
-
-    // --- VENDOR NO2 Products: Sri Guru Thipperudra Swamy Prasada Store ---
-    let product18 : Product = {
-      id = 18;
-      name = "Temple Prasada Pack";
-      vendorId = 6;
-      price = 50;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Authentic prasada from Sri Guru Thipperudra Swamy Temple, Nayakanahatti";
-    };
-    let product19 : Product = {
-      id = 19;
-      name = "Vibhuti (Sacred Ash)";
-      vendorId = 6;
-      price = 20;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Pure vibhuti blessed at the temple";
-    };
-    let product20 : Product = {
-      id = 20;
-      name = "Kumkum & Turmeric Set";
-      vendorId = 6;
-      price = 40;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Sacred kumkum and turmeric for puja rituals";
-    };
-    let product21 : Product = {
-      id = 21;
-      name = "Flower Garland (Fresh)";
-      vendorId = 6;
-      price = 60;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Fresh marigold and jasmine garland for temple offerings";
-    };
-    let product22 : Product = {
-      id = 22;
-      name = "Dry Coconut (Copra)";
-      vendorId = 6;
-      price = 35;
-      category = #pooja;
-      stockStatus = #inStock;
-      description = "Sacred dry coconut (copra) for vow fulfilment offerings";
-    };
+    // --- Products ---
+    let product1 : Product = { id = 1; name = "Pooja Thali"; vendorId = 1; price = 100; category = #pooja; stockStatus = #inStock; description = "Complete pooja essentials" };
+    let product2 : Product = { id = 2; name = "Incense Sticks"; vendorId = 1; price = 50; category = #pooja; stockStatus = #inStock; description = "Fragrant incense sticks" };
+    let product3 : Product = { id = 3; name = "Camphor"; vendorId = 1; price = 30; category = #pooja; stockStatus = #inStock; description = "Pure camphor for aarti" };
+    let product4 : Product = { id = 4; name = "Masala Dosa"; vendorId = 2; price = 60; category = #food; stockStatus = #inStock; description = "Crispy dosa with potato filling" };
+    let product5 : Product = { id = 5; name = "Idli Vada"; vendorId = 2; price = 50; category = #food; stockStatus = #inStock; description = "Soft idlis with crispy vada" };
+    let product6 : Product = { id = 6; name = "Filter Coffee"; vendorId = 2; price = 25; category = #food; stockStatus = #inStock; description = "Traditional south Indian coffee" };
+    let product7 : Product = { id = 7; name = "Rice"; vendorId = 3; price = 500; category = #grocery; stockStatus = #inStock; description = "Premium quality rice 5kg" };
+    let product8 : Product = { id = 8; name = "Dal"; vendorId = 3; price = 150; category = #grocery; stockStatus = #inStock; description = "Toor dal 1kg" };
+    let product9 : Product = { id = 9; name = "Vegetables"; vendorId = 3; price = 100; category = #grocery; stockStatus = #inStock; description = "Fresh mixed vegetables" };
+    let product10 : Product = { id = 10; name = "Paracetamol"; vendorId = 4; price = 20; category = #medicine; stockStatus = #inStock; description = "Pain relief tablets" };
+    let product11 : Product = { id = 11; name = "Cough Syrup"; vendorId = 4; price = 80; category = #medicine; stockStatus = #inStock; description = "Cough relief syrup" };
+    let product12 : Product = { id = 12; name = "First Aid Kit"; vendorId = 4; price = 250; category = #medicine; stockStatus = #inStock; description = "Complete first aid kit" };
+    let product13 : Product = { id = 13; name = "Milk (500ml)"; vendorId = 5; price = 30; category = #grocery; stockStatus = #inStock; description = "Fresh full-cream milk, 500ml packet" };
+    let product14 : Product = { id = 14; name = "Sunflower Oil (1L)"; vendorId = 5; price = 160; category = #grocery; stockStatus = #inStock; description = "Refined sunflower cooking oil, 1 litre" };
+    let product15 : Product = { id = 15; name = "Sugar (1kg)"; vendorId = 5; price = 50; category = #grocery; stockStatus = #inStock; description = "White sugar, 1kg pack" };
+    let product16 : Product = { id = 16; name = "Wheat Atta (5kg)"; vendorId = 5; price = 280; category = #grocery; stockStatus = #inStock; description = "Whole wheat flour, 5kg bag" };
+    let product17 : Product = { id = 17; name = "Biscuits (Parle-G)"; vendorId = 5; price = 10; category = #grocery; stockStatus = #inStock; description = "Classic Parle-G glucose biscuits" };
+    let product18 : Product = { id = 18; name = "Temple Prasada Pack"; vendorId = 6; price = 50; category = #pooja; stockStatus = #inStock; description = "Authentic prasada from Sri Guru Thipperudra Swamy Temple, Nayakanahatti" };
+    let product19 : Product = { id = 19; name = "Vibhuti (Sacred Ash)"; vendorId = 6; price = 20; category = #pooja; stockStatus = #inStock; description = "Pure vibhuti blessed at the temple" };
+    let product20 : Product = { id = 20; name = "Kumkum & Turmeric Set"; vendorId = 6; price = 40; category = #pooja; stockStatus = #inStock; description = "Sacred kumkum and turmeric for puja rituals" };
+    let product21 : Product = { id = 21; name = "Flower Garland (Fresh)"; vendorId = 6; price = 60; category = #pooja; stockStatus = #inStock; description = "Fresh marigold and jasmine garland for temple offerings" };
+    let product22 : Product = { id = 22; name = "Dry Coconut (Copra)"; vendorId = 6; price = 35; category = #pooja; stockStatus = #inStock; description = "Sacred dry coconut (copra) for vow fulfilment offerings" };
 
     products.add(1, product1);
     products.add(2, product2);

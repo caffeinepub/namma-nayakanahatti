@@ -3,10 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, LogIn, Save } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { Copy, Loader2, LogIn, Save } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { UserRole } from "../backend";
+import { useActor } from "../hooks/useActor";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useSaveProfile, useUserProfile } from "../hooks/useQueries";
 
@@ -14,6 +18,16 @@ export default function ProfilePage() {
   const { identity, login, clear, isLoggingIn } = useInternetIdentity();
   const { data: profile, isLoading } = useUserProfile();
   const { mutateAsync: saveProfile, isPending } = useSaveProfile();
+  const { actor, isFetching: isActorFetching } = useActor();
+
+  const { data: callerRole, isLoading: isRoleLoading } = useQuery({
+    queryKey: ["callerUserRole"],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getCallerUserRole();
+    },
+    enabled: !!actor && !isActorFetching && !!identity,
+  });
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -62,7 +76,37 @@ export default function ProfilePage() {
     }
   }
 
+  function handleCopyPrincipal() {
+    navigator.clipboard.writeText(principal);
+    toast.success("Principal ID copied!");
+  }
+
   const principal = identity.getPrincipal().toString();
+
+  function renderRoleBadge() {
+    if (isRoleLoading || isActorFetching) {
+      return <Skeleton className="h-5 w-16 mt-1 rounded-full" />;
+    }
+    if (callerRole === UserRole.admin) {
+      return (
+        <Badge className="text-[10px] mt-1 bg-green-100 text-green-700 border-green-300 hover:bg-green-100">
+          🛡️ Admin
+        </Badge>
+      );
+    }
+    if (callerRole === UserRole.user) {
+      return (
+        <Badge className="text-[10px] mt-1 bg-primary/10 text-primary border-primary/20">
+          👤 Customer
+        </Badge>
+      );
+    }
+    return (
+      <Badge className="text-[10px] mt-1 bg-muted text-muted-foreground border-muted-foreground/20">
+        🙋 Guest
+      </Badge>
+    );
+  }
 
   return (
     <div className="pb-24">
@@ -83,12 +127,24 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-sm">{name || "Welcome, Devotee"}</p>
-              <p className="text-[10px] text-muted-foreground truncate">
-                {principal.slice(0, 20)}...
-              </p>
-              <Badge className="text-[10px] mt-1 bg-primary/10 text-primary border-primary/20">
-                Customer
-              </Badge>
+              <div className="flex items-start gap-1 mt-1">
+                <p
+                  data-ocid="profile.principal.input"
+                  className="text-[9px] text-muted-foreground break-all leading-tight flex-1 select-all"
+                >
+                  {principal}
+                </p>
+                <button
+                  type="button"
+                  data-ocid="profile.copy.button"
+                  onClick={handleCopyPrincipal}
+                  className="shrink-0 p-1 rounded hover:bg-black/10 transition-colors"
+                  title="Copy Principal ID"
+                >
+                  <Copy size={12} className="text-muted-foreground" />
+                </button>
+              </div>
+              {renderRoleBadge()}
             </div>
           </div>
         </motion.div>
